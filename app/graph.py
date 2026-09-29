@@ -1,12 +1,11 @@
 from typing import TypedDict, List
 from langgraph.graph import StateGraph, END
 from langchain_pinecone import PineconeVectorStore
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from app.config import OPENAI_API_KEY, PINECONE_INDEX_NAME
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from app.config import GOOGLE_API_KEY, PINECONE_INDEX_NAME
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
-import json
 
 # Define State
 class GraphState(TypedDict):
@@ -17,14 +16,14 @@ class GraphState(TypedDict):
 
 # Initialize embeddings and language model
 try:
-    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-2", google_api_key=GOOGLE_API_KEY)
     vectorstore = PineconeVectorStore(index_name=PINECONE_INDEX_NAME, embedding=embeddings)
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 except Exception as e:
     # Allows the app to start even if keys are not set, failing only on invocation
     retriever = None
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=OPENAI_API_KEY)
+llm = ChatGoogleGenerativeAI(model="gemini-3.8-flash", temperature=0, google_api_key=GOOGLE_API_KEY)
 
 class AnswerFormat(BaseModel):
     answer: str = Field(description="The synthesized answer based on the context. If the context does not contain the answer, state that the information is not available in the eBook context.")

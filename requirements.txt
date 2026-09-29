@@ -1,12 +1,10 @@
 fastapi
 uvicorn
 langchain
-langchain-openai
+langchain-google-genai
 langchain-pinecone
-langchain-community
 pypdf
 pinecone-client
 langgraph
 pydantic
 python-dotenv
-tiktoken
